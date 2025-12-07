@@ -4,10 +4,14 @@ import jakarta.validation.Valid;
 import org.janedough.parent.config.AppConstants;
 import org.janedough.parent.payload.CategoryDTO;
 import org.janedough.parent.payload.CategoryResponse;
+import org.janedough.parent.payload.ProductDTO;
 import org.janedough.parent.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -24,7 +28,7 @@ public class CategoryController {
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORIES_BY, required = false) String sortBy,
-            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_DIRECTION, required = false) String sortOrder
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIRECTION, required = false) String sortOrder
             )
     {
         CategoryResponse categoryResponse = categoryService.getAllCategories(pageNumber, pageSize, sortBy, sortOrder);
@@ -48,4 +52,12 @@ public class CategoryController {
             CategoryDTO deletedCategory = categoryService.deleteCategory(categoryId);
             return new ResponseEntity<>(deletedCategory, HttpStatus.OK);
     }
+
+    @PutMapping("/admin/categories/{categoryId}/image")
+    public ResponseEntity<CategoryDTO> uploadCategoryImage(@PathVariable Long categoryId,
+                                                           @RequestParam("image") MultipartFile image) throws  IOException {
+        CategoryDTO updatedCategory = categoryService.updateCategoryImage(categoryId, image);
+        return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+    }
+
 }

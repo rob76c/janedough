@@ -3,7 +3,9 @@ package org.janedough.parent.service;
 import org.janedough.parent.model.Category;
 import org.janedough.parent.payload.CategoryDTO;
 import org.janedough.parent.payload.CategoryResponse;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CategoryService {
@@ -13,4 +15,7 @@ public interface CategoryService {
     CategoryDTO deleteCategory(Long categoryId);
 
     CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId);
+
+    CategoryDTO updateCategoryImage(Long categoryId, MultipartFile image) throws IOException;
+
 }
