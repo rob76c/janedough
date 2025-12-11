@@ -40,9 +40,10 @@ public class Address {
     @Size(min = 2, message= "Country name must be at least 2 characters")
     private String country;
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Address(String street, String addressLine2, String city, String state, String zip, String country) {
         this.street = street;
