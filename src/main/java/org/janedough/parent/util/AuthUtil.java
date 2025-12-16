@@ -22,7 +22,7 @@ public class AuthUtil {
 
     public String loggedInPhoneNumber() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByPhoneNumber(authentication.getName()).orElseThrow(()-> new UsernameNotFoundException("User not found with username: " + authentication.getName()));
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(()-> new UsernameNotFoundException("User not found with username: " + authentication.getName()));
 
         return user.getPhoneNumber();
     }
