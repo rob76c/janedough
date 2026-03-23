@@ -23,7 +23,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -58,6 +62,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) ->
@@ -66,6 +71,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+//                        .requestMatchers("/api/carts/**").permitAll()
 //                        .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
@@ -75,6 +81,20 @@ public class WebSecurityConfig {
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
         return http.build();
 }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200/"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
 @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -118,17 +138,17 @@ public class WebSecurityConfig {
 
             // Create users if not already present
             if (!userRepository.existsByUsername("user1")) {
-                User user1 = new User("user1", "user1@example.com", "2016268888", passwordEncoder.encode("password1"), "turntroobie");
+                User user1 = new User("user1", "Robert", "Issac", "Car", "user1@example.com", "2016268888", passwordEncoder.encode("password1"), "turntroobie");
                 userRepository.save(user1);
             }
 
             if (!userRepository.existsByUsername("seller1")) {
-                User seller1 = new User("seller1", "seller1@example.com", "2016268878", passwordEncoder.encode("password2"), "hello123");
+                User seller1 = new User("seller1", "Times Square Tower", "", "41st St","seller1@example.com", "2016268878", passwordEncoder.encode("password2"), "hello123");
                 userRepository.save(seller1);
             }
 
             if (!userRepository.existsByUsername("admin")) {
-                User admin = new User("admin", "admin@example.com", "2016268998", passwordEncoder.encode("adminPass"), "hey12");
+                User admin = new User("admin", "David", "", "Car","admin@example.com", "2016268998", passwordEncoder.encode("adminPass"), "hey12");
                 userRepository.save(admin);
             }
 

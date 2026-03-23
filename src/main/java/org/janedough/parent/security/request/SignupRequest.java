@@ -1,5 +1,6 @@
 package org.janedough.parent.security.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -16,6 +17,17 @@ public class SignupRequest {
             message = "Username can only contain letters, numbers, dots, underscores, and dashes"
     )
     private String username;
+
+    @NotBlank
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "middle_name")
+    private String middleName;
+
+    @NotBlank
+    @Column(name = "last_name")
+    private String lastName;
 
     @NotBlank
     @Size(min = 1, max = 50)

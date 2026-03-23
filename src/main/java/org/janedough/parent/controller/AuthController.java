@@ -53,12 +53,13 @@ public class AuthController {
         try{
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
+                            loginRequest.getEmail(),
                             loginRequest.getPassword())
             );
         }catch(AuthenticationException e){
             Map<String,Object> map = new HashMap<>();
             map.put("message","Invalid username or password");
+            map.put("email",loginRequest.getEmail());
             map.put("status",false);
 
             return new ResponseEntity<Object>(map, HttpStatus.UNAUTHORIZED);
@@ -69,7 +70,7 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),roles, jwtCookie.toString());
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(), userDetails.getEmail(), userDetails.getPhoneNumber(),roles,jwtCookie.toString());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(response);
     }
 
@@ -83,6 +84,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken"));
         }
         User user = new User(signupRequest.getUsername(),
+                signupRequest.getFirstName(),
+                signupRequest.getMiddleName(),
+                signupRequest.getLastName(),
                 signupRequest.getEmail(),
                 signupRequest.getPhoneNumber(),
                 encoder.encode(signupRequest.getPassword()),
@@ -108,7 +112,7 @@ public class AuthController {
                                     .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
                             roles.add(sellerRole);
                             break;
-                    case "Moderator":
+                    case "moderator":
                         Role moderatorRole = roleRepository.findByRoleType(AppRole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
                         roles.add(moderatorRole);
@@ -134,6 +138,7 @@ public class AuthController {
             else
                 return "";
         }
+
     @GetMapping("/user")
     public ResponseEntity<?> getUserDetails(Authentication authentication){
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -151,5 +156,6 @@ public class AuthController {
         ResponseCookie signoutCookie = jwtUtils.getNullJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, signoutCookie.toString()).body(new MessageResponse("Successfully logged out"));
     }
+
     }
 

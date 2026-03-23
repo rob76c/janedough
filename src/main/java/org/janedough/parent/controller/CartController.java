@@ -4,7 +4,6 @@ import org.janedough.parent.model.Cart;
 import org.janedough.parent.payload.CartDTO;
 import org.janedough.parent.payload.CartItemDTO;
 import org.janedough.parent.repositories.CartRepository;
-import org.janedough.parent.repositories.ProductRepository;
 import org.janedough.parent.service.CartService;
 import org.janedough.parent.util.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,12 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @PostMapping("carts/create")
+    public ResponseEntity<String> createOrUpdateCart(@RequestBody List<CartItemDTO> cartItems) {
+        String response = cartService.createOrUpdateCartWithItems(cartItems);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
     @PostMapping("carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductToCart(@PathVariable Long productId, @PathVariable Integer quantity) {
         CartDTO cartDTO = cartService.addProductToCart(productId,quantity);
@@ -38,7 +43,7 @@ public class CartController {
         return new ResponseEntity<List<CartDTO>>(cartDTOS, HttpStatus.FOUND);
     }
 
-    @GetMapping("/carts/users/cart")
+    @GetMapping("/carts/user/cart")
     public ResponseEntity<CartDTO> getCartById(){
         String emailId = authUtil.loggedInEmail();
         Cart cart = cartRepository.findCartByEmail(emailId);

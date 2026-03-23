@@ -2,8 +2,11 @@ package org.janedough.parent.service;
 
 import jakarta.transaction.Transactional;
 import org.janedough.parent.payload.OrderDTO;
+import org.janedough.parent.payload.OrderResponse;
 
 public interface OrderService {
     @Transactional
     OrderDTO placeOrder(String email, String phoneNumber, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage, Long addressId);
+
+    OrderResponse getAllOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 }

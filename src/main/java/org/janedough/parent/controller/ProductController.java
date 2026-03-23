@@ -2,6 +2,7 @@ package org.janedough.parent.controller;
 
 import jakarta.validation.Valid;
 import org.janedough.parent.config.AppConstants;
+import org.janedough.parent.payload.AddressDTO;
 import org.janedough.parent.payload.ProductDTO;
 import org.janedough.parent.payload.ProductResponse;
 import org.janedough.parent.service.ProductService;
@@ -37,6 +38,12 @@ public class ProductController {
     {
         ProductResponse productResponse = productService.getAllProducts(pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/products/{productId}")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) {
+        ProductDTO productDTO = productService.getProductById(productId);
+        return new ResponseEntity<ProductDTO>(productDTO, HttpStatus.OK);
     }
 
     @GetMapping("/public/categories/{categoryId}/products")

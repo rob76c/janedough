@@ -66,6 +66,9 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDTO updateAddress(AddressDTO addressDTO, Long addressId) {
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+        address.setFirstName(addressDTO.getFirstName());
+        address.setMiddleName(addressDTO.getMiddleName());
+        address.setLastName(addressDTO.getLastName());
         address.setStreet(addressDTO.getStreet());
         address.setAddressLine2(addressDTO.getAddressLine2());
         address.setCity(addressDTO.getCity());

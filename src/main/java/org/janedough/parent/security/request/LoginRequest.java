@@ -1,16 +1,14 @@
 package org.janedough.parent.security.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class LoginRequest {
     @NotBlank
-    @Pattern(
-            regexp = "^[a-zA-Z0-9._-]+$",
-            message = "Username can only contain letters, numbers, dots, underscores, and dashes"
-    )
-    private String username;
+    @Email
+    private String email;
 
     @NotBlank
     @Size(min = 8, max = 64, message = "Password must be 8–64 characters long")
@@ -20,12 +18,12 @@ public class LoginRequest {
     )
     private String password;
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

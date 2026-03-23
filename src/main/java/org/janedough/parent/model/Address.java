@@ -22,6 +22,17 @@ public class Address {
     private Long addressId;
 
     @NotBlank
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "middle_name")
+    private String middleName;
+
+    @NotBlank
+    @Column(name = "last_name")
+    private String lastName;
+
+    @NotBlank
     @Size(min = 5, message= "Street name must be at least 2 characters")
     private String street;
 
@@ -45,7 +56,10 @@ public class Address {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Address(String street, String addressLine2, String city, String state, String zip, String country) {
+    public Address(String firstName, String middleName, String lastName, String street, String addressLine2, String city, String state, String zip, String country) {
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
         this.street = street;
         this.addressLine2 = addressLine2;
         this.city = city;

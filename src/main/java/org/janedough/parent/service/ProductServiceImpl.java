@@ -2,9 +2,11 @@ package org.janedough.parent.service;
 
 import org.janedough.parent.exceptions.APIException;
 import org.janedough.parent.exceptions.ResourceNotFoundException;
+import org.janedough.parent.model.Address;
 import org.janedough.parent.model.Cart;
 import org.janedough.parent.model.Category;
 import org.janedough.parent.model.Product;
+import org.janedough.parent.payload.AddressDTO;
 import org.janedough.parent.payload.CartDTO;
 import org.janedough.parent.payload.ProductDTO;
 import org.janedough.parent.payload.ProductResponse;
@@ -41,6 +43,8 @@ public class ProductServiceImpl implements ProductService {
     private FileService fileService;
     @Value("${project.image}")
     private String path;
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
@@ -74,7 +78,11 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productsPage.getContent();
 
         List<ProductDTO> productDTOS = products.stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .map(product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setImage(constructImageUrl(product.getImage()));
+                    return productDTO;
+                })
                 .toList();
 
         ProductResponse productResponse = new ProductResponse();
@@ -85,6 +93,10 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setTotalElements(productsPage.getTotalElements());
         productResponse.setLastPage(productsPage.isLast());
         return productResponse;
+    }
+
+    private String constructImageUrl(String imageName) {
+        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : imageBaseUrl + "/" + imageName;
     }
 
     @Override
@@ -190,6 +202,12 @@ public class ProductServiceImpl implements ProductService {
         productFromDB.setImage(fileName);
         Product savedProduct = productRepository.save(productFromDB);
         return modelMapper.map(savedProduct, ProductDTO.class);
+    }
+
+    @Override
+    public ProductDTO getProductById(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product","productId",productId));
+        return modelMapper.map(product, ProductDTO.class);
     }
 
 }

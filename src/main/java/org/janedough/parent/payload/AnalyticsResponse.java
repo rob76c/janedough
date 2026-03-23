@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartItemDTO {
-    private Long productId;
-    private Integer quantity;
+public class AnalyticsResponse {
+    private String productCount;
+    private String totalRevenue;
+    private String totalOrders;
 }

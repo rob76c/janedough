@@ -7,6 +7,7 @@ import org.janedough.parent.model.Cart;
 import org.janedough.parent.model.CartItem;
 import org.janedough.parent.model.Product;
 import org.janedough.parent.payload.CartDTO;
+import org.janedough.parent.payload.CartItemDTO;
 import org.janedough.parent.payload.ProductDTO;
 import org.janedough.parent.repositories.CartItemRepository;
 import org.janedough.parent.repositories.CartRepository;
@@ -117,6 +118,7 @@ public class CartServiceImpl implements CartService {
     public CartDTO updateProductQuantityInCart(Long productId, Integer quantity) {
 
         String emailId = authUtil.loggedInEmail();
+        System.out.println(emailId);
         Cart userCart = cartRepository.findCartByEmail(emailId);
         Long cartId = userCart.getCartId();
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart", "cartId", cartId));
@@ -189,6 +191,40 @@ public class CartServiceImpl implements CartService {
         cartItem.setProductPrice(product.getSpecialPrice());
         cart.setTotalPrice(cartPrice + (cartItem.getProductPrice() * cartItem.getQuantity()));
         cartItem = cartItemRepository.save(cartItem);
+    }
+
+    @Transactional
+    @Override
+    public String createOrUpdateCartWithItems(List<CartItemDTO> cartItems) {
+        String emailId = authUtil.loggedInEmail();
+        Cart  existingCart = cartRepository.findCartByEmail(emailId);
+        if (existingCart == null) {
+            existingCart = new Cart();
+            existingCart.setTotalPrice(0.00);
+            existingCart.setUser(authUtil.loggedInUser());
+            existingCart = cartRepository.save(existingCart);
+        } else {
+            cartItemRepository.deleteAllItemsByCartId(existingCart.getCartId());
+        }
+        double totalPrice = 0.00;
+        for (CartItemDTO cartItemDTO : cartItems) {
+            Long productId = cartItemDTO.getProductId();
+            Integer quantity = cartItemDTO.getQuantity();
+            Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+//            product.setStock(product.getStock() - quantity);
+            totalPrice += product.getSpecialPrice() * quantity;
+
+            CartItem cartItem = new CartItem();
+            cartItem.setProduct(product);
+            cartItem.setCart(existingCart);
+            cartItem.setQuantity(quantity);
+            cartItem.setProductPrice(product.getSpecialPrice());
+            cartItem.setDiscount(product.getDiscount());
+            cartItemRepository.save(cartItem);
+        }
+        existingCart.setTotalPrice(totalPrice);
+        cartRepository.save(existingCart);
+        return "Cart has been updated/created!";
     }
 
     private Cart createCart() {

@@ -2,6 +2,7 @@ package org.janedough.parent.service;
 
 import jakarta.transaction.Transactional;
 import org.janedough.parent.payload.CartDTO;
+import org.janedough.parent.payload.CartItemDTO;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface CartService {
     String deleteProductFromCart(Long cartId, Long productId);
 
     void updateProductInCarts(Long cartId, Long productId);
+
+    String createOrUpdateCartWithItems(List<CartItemDTO> cartItems);
 }

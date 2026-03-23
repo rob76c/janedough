@@ -30,6 +30,17 @@ public class User {
     private String username;
 
     @NotBlank
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "middle_name")
+    private String middleName;
+
+    @NotBlank
+    @Column(name = "last_name")
+    private String lastName;
+
+    @NotBlank
     @Size(min = 2, max = 50)
     @Email
     @Column(name = "email")
@@ -48,8 +59,11 @@ public class User {
     @Column(name= "social_media_handle")
     private String socialMediaHandle;
 
-    public User( String username, String email, String phoneNumber, String password, String socialMediaHandle) {
+    public User( String username, String firstName, String middleName, String lastName, String email, String phoneNumber, String password, String socialMediaHandle) {
         this.username = username;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;

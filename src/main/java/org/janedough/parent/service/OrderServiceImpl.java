@@ -6,9 +6,14 @@ import org.janedough.parent.exceptions.ResourceNotFoundException;
 import org.janedough.parent.model.*;
 import org.janedough.parent.payload.OrderDTO;
 import org.janedough.parent.payload.OrderItemDTO;
+import org.janedough.parent.payload.OrderResponse;
 import org.janedough.parent.repositories.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -97,5 +102,26 @@ public class OrderServiceImpl implements OrderService {
         orderDTO.setAddressId(addressId);
 
         return orderDTO;
+    }
+
+    @Override
+    public OrderResponse getAllOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Order> pageOrders = orderRepository.findAll(pageDetails);
+        List<Order> orders = pageOrders.getContent();
+        List<OrderDTO> orderDTOs = orders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).toList();
+        OrderResponse orderResponse = new OrderResponse();
+        orderResponse.setContent(orderDTOs);
+        orderResponse.setPageNumber(pageOrders.getNumber());
+        orderResponse.setPageSize(pageOrders.getSize());
+        orderResponse.setTotalPages(pageOrders.getTotalPages());
+        orderResponse.setTotalElements(pageOrders.getTotalElements());
+        orderResponse.setLastPage(pageOrders.isLast());
+
+
+        return orderResponse;
     }
 }
