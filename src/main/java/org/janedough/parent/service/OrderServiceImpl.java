@@ -1,6 +1,7 @@
 package org.janedough.parent.service;
 
 import jakarta.transaction.Transactional;
+import org.janedough.parent.config.AppConstants;
 import org.janedough.parent.exceptions.APIException;
 import org.janedough.parent.exceptions.ResourceNotFoundException;
 import org.janedough.parent.model.*;
@@ -59,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         order.setEmail(email);
         order.setPhoneNumber(phoneNumber);
         order.setOrderDateTime(LocalDateTime.now());
-        order.setTotalPrice(cart.getTotalPrice());
+        order.setTotalPrice(cart.getTotalPrice() + (AppConstants.TAX *cart.getTotalPrice()) );
         order.setOrderStatus("Order Accepted!");
         order.setAddress(address);
 

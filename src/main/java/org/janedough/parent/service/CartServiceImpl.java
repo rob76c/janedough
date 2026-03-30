@@ -8,6 +8,7 @@ import org.janedough.parent.model.CartItem;
 import org.janedough.parent.model.Product;
 import org.janedough.parent.payload.CartDTO;
 import org.janedough.parent.payload.CartItemDTO;
+import org.janedough.parent.payload.CartItemResponseDTO;
 import org.janedough.parent.payload.ProductDTO;
 import org.janedough.parent.repositories.CartItemRepository;
 import org.janedough.parent.repositories.CartRepository;
@@ -69,12 +70,12 @@ public class CartServiceImpl implements CartService {
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
 
         List<CartItem> cartItems = cart.getCartItems();
-        Stream<ProductDTO> productStream = cartItems.stream().map(item -> {
-            ProductDTO map = modelMapper.map(item.getProduct(), ProductDTO.class);
-            map.setStock(item.getQuantity());
+        Stream<CartItemResponseDTO> productStream = cartItems.stream().map(item -> {
+            CartItemResponseDTO map = modelMapper.map(item.getProduct(), CartItemResponseDTO.class);
+            map.setQuantity(item.getQuantity());
             return map;
         });
-        cartDTO.setProducts(productStream.toList());
+        cartDTO.setItems(productStream.toList());
         return cartDTO;
     }
 
@@ -87,12 +88,12 @@ public class CartServiceImpl implements CartService {
         List<CartDTO> cartDTOS = carts.stream()
                 .map(cart -> {
                     CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-                    List<ProductDTO> products = cart.getCartItems().stream().map(cartItem -> {
-                        ProductDTO productDTO = modelMapper.map(cartItem.getProduct(), ProductDTO.class);
-                        productDTO.setStock(cartItem.getQuantity());
-                        return productDTO;
+                    List<CartItemResponseDTO> cartItems = cart.getCartItems().stream().map(cartItem -> {
+                        CartItemResponseDTO itemDTO = modelMapper.map(cartItem.getProduct(), CartItemResponseDTO.class);
+                        itemDTO.setQuantity(cartItem.getQuantity());
+                        return itemDTO;
                             }).toList();
-                    cartDTO.setProducts(products);
+                    cartDTO.setItems(cartItems);
                     return cartDTO;
                 }).toList();
 
@@ -106,10 +107,13 @@ public class CartServiceImpl implements CartService {
             throw new ResourceNotFoundException("Cart", "cartId", cartId);
         }
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-        cart.getCartItems().forEach(c -> c.getProduct().setStock(c.getQuantity()));
-        List<ProductDTO> products = cart.getCartItems().stream().map(p -> modelMapper.map(p.getProduct(), ProductDTO.class))
-                .toList();
-        cartDTO.setProducts(products);
+
+        List<CartItemResponseDTO> products = cart.getCartItems().stream().map(cartItem -> {
+            CartItemResponseDTO itemDTO = modelMapper.map(cartItem.getProduct(), CartItemResponseDTO.class);
+            itemDTO.setQuantity(cartItem.getQuantity()); // Manually inject the cart quantity here
+            return itemDTO;
+        }).toList();
+        cartDTO.setItems(products);
         return cartDTO;
     }
 
@@ -156,12 +160,12 @@ public class CartServiceImpl implements CartService {
         }
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
         List<CartItem> cartItems = cart.getCartItems();
-        Stream<ProductDTO> productsStream = cartItems.stream().map(item -> {
-            ProductDTO prod = modelMapper.map(item.getProduct(), ProductDTO.class);
-            prod.setStock(item.getQuantity());
+        Stream<CartItemResponseDTO> productsStream = cartItems.stream().map(item -> {
+            CartItemResponseDTO prod = modelMapper.map(item.getProduct(), CartItemResponseDTO.class);
+            prod.setQuantity(item.getQuantity());
             return prod;
         });
-        cartDTO.setProducts(productsStream.toList());
+        cartDTO.setItems(productsStream.toList());
         return cartDTO;
     }
 

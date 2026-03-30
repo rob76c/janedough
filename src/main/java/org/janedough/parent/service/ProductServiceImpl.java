@@ -171,15 +171,15 @@ public class ProductServiceImpl implements ProductService {
 
         List<Cart> carts = cartRepository.findCartsByProductId(productId);
 
-        List<CartDTO> cartDTOs = carts.stream().map(cart -> {
-            CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-            List<ProductDTO> products = cart.getCartItems().stream().map(p -> modelMapper.map(p.getProduct(), ProductDTO.class))
-                    .toList();
-            cartDTO.setProducts(products);
-            return cartDTO;
-        }).toList();
+//        List<CartDTO> cartDTOs = carts.stream().map(cart -> {
+//            CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+//            List<ProductDTO> products = cart.getCartItems().stream().map(p -> modelMapper.map(p.getProduct(), ProductDTO.class))
+//                    .toList();
+//            cartDTO.setProducts(products);
+//            return cartDTO;
+//        }).toList();
 
-        cartDTOs.forEach(cart -> cartService.updateProductInCarts(cart.getCartId(), productId ));
+        carts.forEach(cart -> cartService.updateProductInCarts(cart.getCartId(), productId ));
 
         return modelMapper.map(savedProduct, ProductDTO.class);
     }

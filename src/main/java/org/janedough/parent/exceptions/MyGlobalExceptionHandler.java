@@ -39,4 +39,13 @@ public class MyGlobalExceptionHandler {
         APIResponse apiResponse = new APIResponse(message, false);
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(jakarta.validation.ConstraintViolationException e) {
+        Map<String, String> response = new HashMap<>();
+        e.getConstraintViolations().forEach(violation -> {
+            response.put(violation.getPropertyPath().toString(), violation.getMessage());
+        });
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

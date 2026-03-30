@@ -8,4 +8,6 @@ public class AppConstants {
     public static final String SORT_PRODUCTS_BY = "productId";
     public static final String SORT_DIRECTION = "ascending";
     public static final String SORT_ORDERS_BY = "totalPrice";
+
+    public static final Double TAX = .06625;
 }
