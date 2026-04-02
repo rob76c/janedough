@@ -14,7 +14,7 @@ public class SignupRequest {
     @NotBlank
     @Pattern(
             regexp = "^[a-zA-Z0-9._-]+$",
-            message = "Username can only contain letters, numbers, dots, underscores, and dashes"
+            message = "Username must be at least 2 characters long, can only contain letters, numbers, dots, underscores, and dashes"
     )
     private String username;
 
@@ -41,10 +41,10 @@ public class SignupRequest {
     private Set<String> role;
 
     @NotBlank
-    @Size(min = 2, max = 120)
+    @Size(min = 8, max = 120)
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
-            message = "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+            message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number"
     )
     private String password;
 

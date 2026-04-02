@@ -9,4 +9,6 @@ public interface OrderService {
     OrderDTO placeOrder(String email, String phoneNumber, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage, Long addressId);
 
     OrderResponse getAllOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+
+    OrderResponse getAllUserOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 }

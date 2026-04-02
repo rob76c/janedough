@@ -9,6 +9,7 @@ import org.janedough.parent.payload.OrderDTO;
 import org.janedough.parent.payload.OrderItemDTO;
 import org.janedough.parent.payload.OrderResponse;
 import org.janedough.parent.repositories.*;
+import org.janedough.parent.util.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+     AuthUtil authUtil;
 
     @Override
     @Transactional
@@ -114,6 +118,32 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> pageOrders = orderRepository.findAll(pageDetails);
         List<Order> orders = pageOrders.getContent();
         List<OrderDTO> orderDTOs = orders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).toList();
+        OrderResponse orderResponse = new OrderResponse();
+        orderResponse.setContent(orderDTOs);
+        orderResponse.setPageNumber(pageOrders.getNumber());
+        orderResponse.setPageSize(pageOrders.getSize());
+        orderResponse.setTotalPages(pageOrders.getTotalPages());
+        orderResponse.setTotalElements(pageOrders.getTotalElements());
+        orderResponse.setLastPage(pageOrders.isLast());
+
+
+        return orderResponse;
+    }
+
+    @Override
+    public OrderResponse getAllUserOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+
+        String user = authUtil.loggedInEmail();
+        Page<Order> pageOrders = orderRepository.findAll(pageDetails);
+
+        List<Order> userOrders = pageOrders.getContent().stream()
+                .filter(order -> order.getEmail().equals(user)
+                ).toList();
+        List<OrderDTO> orderDTOs = userOrders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).toList();
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setContent(orderDTOs);
         orderResponse.setPageNumber(pageOrders.getNumber());

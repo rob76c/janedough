@@ -52,7 +52,7 @@ public class User {
     private String phoneNumber;
 
     @NotBlank
-    @Size(min = 2, max = 120)
+    @Size(min = 8, max = 120)
     @Column(name = "password")
     private String password;
 
