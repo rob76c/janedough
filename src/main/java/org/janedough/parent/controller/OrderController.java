@@ -38,7 +38,8 @@ public class OrderController {
                 orderRequestDTO.getPgPaymentId(),
                 orderRequestDTO.getPgStatus(),
                 orderRequestDTO.getPgResponseMessage(),
-                orderRequestDTO.getAddressId()
+                orderRequestDTO.getShippingAddressId(),
+                orderRequestDTO.getBillingAddressId()
 
         );
         return new ResponseEntity<>(order, HttpStatus.CREATED);

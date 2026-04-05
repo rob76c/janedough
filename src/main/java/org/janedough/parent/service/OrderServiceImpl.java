@@ -53,20 +53,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderDTO placeOrder(String email, String phoneNumber, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage, Long addressId) {
+    public OrderDTO placeOrder(String email, String phoneNumber, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage, Long shippingAddressId, Long billingAddressId) {
 
         Cart cart = cartRepository.findCartByEmail(email);
         if (cart == null) {
             throw new ResourceNotFoundException("Cart", "email", email);
         }
-        Address address = addressRepository.findById(addressId).orElseThrow(() -> new ResourceNotFoundException("Address", "AddressId", addressId));
+        Address shippingAddress = addressRepository.findById(shippingAddressId).orElseThrow(() -> new ResourceNotFoundException("Address", "AddressId", shippingAddressId));
+        Address billingAddress = addressRepository.findById(billingAddressId).orElseThrow(() -> new ResourceNotFoundException("Address", "AddressId", billingAddressId));
         Order order = new Order();
         order.setEmail(email);
         order.setPhoneNumber(phoneNumber);
         order.setOrderDateTime(LocalDateTime.now());
         order.setTotalPrice(cart.getTotalPrice() + (AppConstants.TAX *cart.getTotalPrice()) );
         order.setOrderStatus("Order Accepted!");
-        order.setAddress(address);
+        order.setShippingAddress(shippingAddress);
+        order.setBillingAddress(billingAddress);
 
         Payment payment = new Payment(pgPaymentId, paymentMethod, pgStatus, pgName, pgResponseMessage);
         payment.setOrder(order);
@@ -104,7 +106,8 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDTO orderDTO = modelMapper.map(savedOrder, OrderDTO.class);
         orderItems.forEach(item -> orderDTO.getOrderItems().add(modelMapper.map(item, OrderItemDTO.class)));
-        orderDTO.setAddressId(addressId);
+        orderDTO.setShippingAddressId(shippingAddressId);
+        orderDTO.setBillingAddressId(billingAddressId);
 
         return orderDTO;
     }

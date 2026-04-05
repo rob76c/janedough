@@ -40,6 +40,10 @@ public class Order {
     private String orderStatus;
 
     @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+    @JoinColumn(name = "shipping_address_id")
+    private Address shippingAddress;
+
+    @ManyToOne
+    @JoinColumn(name = "billing_address_id")
+    private Address billingAddress;
 }
